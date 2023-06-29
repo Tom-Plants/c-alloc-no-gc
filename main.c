@@ -7,7 +7,7 @@ MEM_REQUIREMENT reclaim() {
   return MEM_DONT_FREE;
 }
 MEM_REQUIREMENT reclaim2() {
-  printf("reclaim2 的任务已经结束，该内存可以被释放\n");
+  printf("reclaim2 的任务还未结束，该内存可以被释放\n");
   return MEM_RECLAIM;
 }
 MEM_REQUIREMENT reclaim3() {
@@ -53,6 +53,10 @@ int main() {
 
   void *p = alloc_from_zone(zone1, 10, reclaim6);
   memset(p, 1, 10);
+  print_zone(zone1);
+
+  void *i = alloc_from_zone(zone1, 10, reclaim6);
+  memset(i, 3, 10);
   print_zone(zone1);
 
   free_zone(zone1);

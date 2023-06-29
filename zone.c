@@ -78,7 +78,8 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
       continue;
     }
 
-    //printf("required: %lX, page .. %lX\n", (long)ctx.base + ctx.offset + size, (long)*page);
+    // printf("required: %lX, page .. %lX\n", (long)ctx.base + ctx.offset +
+    // size, (long)*page);
 
     if (*page < (void *)((char *)ctx.base + ctx.offset + size)) {
       page_reclaim_fp = (void **)(((unsigned long *)*page) + 1);
@@ -89,7 +90,7 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
       *((long *)ctx.manager_base + ctx.manager_offset) = -1;
       unsigned long inital_offset = ctx.offset;
       next_page(&ctx);
-      ctx.offset = inital_offset; //dont change offset
+      ctx.offset = inital_offset; // dont change offset
       continue;
     } else {
       return 0;
@@ -128,7 +129,15 @@ void *alloc_from_zone(zone_ctx *zone, unsigned long size,
     return NULL;
   }
 
+  long try_count = 0;
+
 NEXT_PAGE:
+  try_count++;
+
+  if (try_count > MAX_ALLOC_COUNT) {
+    printf("[warn] no free memory !\n");
+    return NULL;
+  }
 
   if (POINTER_SIZE * 2 + size + zone->offset > zone->size) {
     zone->offset = 0;
@@ -138,8 +147,8 @@ NEXT_PAGE:
   if (clean_pages(zone, size) == 0) {
     return create_page(zone, size, callback);
   } else {
-    printf("%lX report DONT_FREE, goto next page \n",
-           (long)((char *)zone->base + zone->offset));
+    // printf("%lX report DONT_FREE, goto next page \n",
+    //(long)((char *)zone->base + zone->offset));
     next_page(zone);
     goto NEXT_PAGE;
   }
