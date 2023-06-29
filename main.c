@@ -14,6 +14,22 @@ MEM_REQUIREMENT reclaim3() {
   printf("reclaim3 的任务已经结束，该内存可以被释放\n");
   return MEM_RECLAIM;
 }
+MEM_REQUIREMENT reclaim4() {
+  printf("reclaim4 的任务已经结束，该内存可以被释放\n");
+  return MEM_RECLAIM;
+}
+MEM_REQUIREMENT reclaim5() {
+  printf("reclaim5 的任务已经结束，该内存可以被释放\n");
+  return MEM_RECLAIM;
+}
+MEM_REQUIREMENT reclaim6() {
+  printf("reclaim6 的任务已经结束，该内存可以被释放\n");
+  return MEM_RECLAIM;
+}
+MEM_REQUIREMENT reclaim7() {
+  printf("reclaim7 的任务已经结束，该内存可以被释放\n");
+  return MEM_RECLAIM;
+}
 int main() {
   void *zone1 = create_zone(100);
   print_zone(zone1);
@@ -24,14 +40,19 @@ int main() {
   alloc_from_zone(zone1, 10, reclaim2);
   print_zone(zone1);
 
-  alloc_from_zone(zone1, 10, reclaim2);
+  alloc_from_zone(zone1, 10, reclaim3);
   print_zone(zone1);
 
-  alloc_from_zone(zone1, 1, reclaim3);
+  void *g = alloc_from_zone(zone1, 1, reclaim4);
+  memset(g, 90, 1);
   print_zone(zone1);
 
-  void *k = alloc_from_zone(zone1, 50, reclaim3);
-  memset(k, 0, 50);
+  void *k = alloc_from_zone(zone1, 10, reclaim5);
+  memset(k, 2, 10);
+  print_zone(zone1);
+
+  void *p = alloc_from_zone(zone1, 10, reclaim6);
+  memset(p, 1, 10);
   print_zone(zone1);
 
   free_zone(zone1);

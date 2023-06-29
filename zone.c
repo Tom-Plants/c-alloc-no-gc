@@ -8,7 +8,12 @@
 
 void print_mem(const void *ptr, size_t size) {
   const unsigned char *mem = (const unsigned char *)ptr;
+  int p = 0;
   for (size_t i = 0; i < size; i++) {
+    if (p != 0 && p % 8 == 0)
+      printf("|");
+    if ((p++) % 32 == 0)
+      printf("\n");
     printf("%02X ", mem[i]);
   }
   printf("\n");
@@ -68,7 +73,12 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
     if (*page == NULL) {
       return 0;
     }
+    if ((long)*page == -1) {
+      next_page(&ctx);
+      continue;
+    }
 
+    //printf("required: %lX, page .. %lX\n", (long)ctx.base + ctx.offset + size, (long)*page);
 
     if (*page < (void *)((char *)ctx.base + ctx.offset + size)) {
       page_reclaim_fp = (void **)(((unsigned long *)*page) + 1);
@@ -76,7 +86,10 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
       res = fp();
       if (res > 0)
         return 1;
+      *((long *)ctx.manager_base + ctx.manager_offset) = -1;
+      unsigned long inital_offset = ctx.offset;
       next_page(&ctx);
+      ctx.offset = inital_offset; //dont change offset
       continue;
     } else {
       return 0;
@@ -107,6 +120,9 @@ void *create_page(zone_ctx *zone, unsigned long size, fp_reclaiming callback) {
 
 void *alloc_from_zone(zone_ctx *zone, unsigned long size,
                       fp_reclaiming callback) {
+
+  size = ((size / 4) + 1) * 4; // mem align
+
   if (POINTER_SIZE * 2 + size > zone->size) {
     printf(" -- alloc memory oversize --\n");
     return NULL;
