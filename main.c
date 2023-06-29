@@ -3,15 +3,15 @@
 #include <string.h>
 
 MEM_REQUIREMENT reclaim() {
-  printf("reclaim1 ... 关我批事，请加速\n");
+  printf("reclaim1 的任务还未完成，继续持有该块内存\n");
   return MEM_DONT_FREE;
 }
 MEM_REQUIREMENT reclaim2() {
-  printf("reclaim2 ... 我滴任务，完成啦，啊哈哈哈哈\n");
+  printf("reclaim2 的任务已经结束，该内存可以被释放\n");
   return MEM_RECLAIM;
 }
 MEM_REQUIREMENT reclaim3() {
-  printf("reclaim3 ... 我滴任务，完成啦，啊哈哈哈哈\n");
+  printf("reclaim3 的任务已经结束，该内存可以被释放\n");
   return MEM_RECLAIM;
 }
 int main() {
