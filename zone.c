@@ -69,7 +69,8 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
       return 0;
     }
 
-    if (*page < (void *)((char *)ctx.base + size)) {
+
+    if (*page < (void *)((char *)ctx.base + ctx.offset + size)) {
       page_reclaim_fp = (void **)(((unsigned long *)*page) + 1);
       fp_reclaiming fp = (*page_reclaim_fp);
       res = fp();
