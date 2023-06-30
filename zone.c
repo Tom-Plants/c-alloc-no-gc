@@ -6,6 +6,15 @@
 #define POINTER_SIZE sizeof(long)
 #define MAX_ALLOC_COUNT 1024
 
+typedef struct {
+  unsigned long size;
+  unsigned long offset;
+  void *base;
+
+  void **manager_base;
+  unsigned long manager_offset;
+} zone_ctx;
+
 void print_mem(const void *ptr, size_t size) {
   const unsigned char *mem = (const unsigned char *)ptr;
   int p = 0;
@@ -19,7 +28,9 @@ void print_mem(const void *ptr, size_t size) {
   printf("\n");
 }
 
-void print_zone(zone_ctx *zone) {
+void print_zone(h_zone_ctx *_zone) {
+  zone_ctx *zone = _zone;
+
   printf("--------------------\n");
   printf("zone: offset: %ld \n", zone->offset);
   print_mem(zone->base, zone->size);
@@ -45,7 +56,8 @@ void *create_zone(unsigned long size) {
   return ctx;
 }
 
-void free_zone(zone_ctx *zone) {
+void free_zone(h_zone_ctx *_zone) {
+  zone_ctx *zone = _zone;
   free(zone->base);
   free(zone);
 }
@@ -59,8 +71,8 @@ void next_page(zone_ctx *zone) {
   zone->manager_offset += 1;
 }
 
-int clean_pages(zone_ctx *zone, unsigned long size) {
-
+int clean_pages(h_zone_ctx *_zone, unsigned long size) {
+  zone_ctx *zone = _zone;
   void **page = NULL;
   void **page_reclaim_fp = NULL;
   int res = 0;
@@ -98,8 +110,9 @@ int clean_pages(zone_ctx *zone, unsigned long size) {
   }
 }
 
-void *create_page(zone_ctx *zone, unsigned long size, fp_reclaiming callback) {
-
+void *create_page(h_zone_ctx *_zone, unsigned long size,
+                  fp_reclaiming callback) {
+  zone_ctx *zone = _zone;
   void *page_content = NULL;
   // zone
   *(unsigned long *)((char *)zone->base + zone->offset) = size;
@@ -119,8 +132,9 @@ void *create_page(zone_ctx *zone, unsigned long size, fp_reclaiming callback) {
   return page_content;
 }
 
-void *alloc_from_zone(zone_ctx *zone, unsigned long size,
+void *alloc_from_zone(h_zone_ctx *_zone, unsigned long size,
                       fp_reclaiming callback) {
+  zone_ctx *zone = _zone;
 
   size = ((size / 4) + 1) * 4; // mem align
 

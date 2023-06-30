@@ -1,11 +1,4 @@
-typedef struct {
-  unsigned long size;
-  unsigned long offset;
-  void *base;
-
-  void **manager_base;
-  unsigned long manager_offset;
-} zone_ctx;
+typedef void h_zone_ctx; // handle of zone
 
 /**
  * return 0 我滴任务完成啦，啊哈哈哈哈
@@ -19,7 +12,7 @@ typedef enum _MEM_REQUIREMENT {
 typedef MEM_REQUIREMENT (*fp_reclaiming)();
 
 void *create_zone(unsigned long size);
-void free_zone(zone_ctx *zone);
-void *alloc_from_zone(zone_ctx *zone, unsigned long size,
+void free_zone(h_zone_ctx *zone);
+void *alloc_from_zone(h_zone_ctx *zone, unsigned long size,
                       fp_reclaiming callback);
-void print_zone(zone_ctx *zone);
+void print_zone(h_zone_ctx *zone);
